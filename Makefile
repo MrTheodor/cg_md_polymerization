@@ -42,7 +42,16 @@ $(CHAIN_ESPP)_%/log.espp $(CHAIN_ESPP)_%/dump.h5: code/chain_run.py code/chain_h
 	 --interval $(TH) --sites $(SITES) --steps $(CHAIN_STEPS_ESPP) --dt 0.0025 --loops 400 \
 	--file dump.h5 --dump-interval 500 > log.espp)
 
+$(CHAIN_ESPP)_%/log_gr.espp $(CHAIN_ESPP)_%/dump_gr.h5: code/chain_run_gr.py code/chain_h5md.py code/chain_setup.py
+	@mkdir -p $(CHAIN_ESPP)_$*
+	SEED=$(shell head --bytes=2 /dev/urandom | od -t u2 | head -n1 | awk '{print $$2}') ; \
+	(cd $(CHAIN_ESPP)_$*; $(PY) ../code/chain_run_gr.py $(CHAIN_N) --seed $${SEED} --rate $(RATE) \
+	 --interval $(TH) --sites $(SITES) --steps $(CHAIN_STEPS_ESPP) --dt 0.0025 --loops 400 \
+	--file dump.h5 --dump-interval 500 > log.espp)
+
 chain_espp: $(CHAIN_ESPP)_$(RUN)/log.espp $(CHAIN_ESPP)_$(RUN)/dump.h5
+
+chain_espp_gr: $(CHAIN_ESPP)_$(RUN)/log_gr.espp $(CHAIN_ESPP)_$(RUN)/dump_gr.h5
 
 $(EPOXY_LAMMPS)_%/log.lammps $(EPOXY_LAMMPS)_%/nb.txt.gz: mirrorlj.txt code/in.epoxy
 	@mkdir -p $(EPOXY_LAMMPS)_$*
