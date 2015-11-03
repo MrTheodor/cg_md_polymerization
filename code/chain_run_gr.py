@@ -89,13 +89,14 @@ r_type_1 = espressopp.integrator.Reaction(
     type_1=0,
     type_2=0,
     delta_1=-1,
-    delta_2=-1,
+    delta_2=2,
     min_state_1=2,
     max_state_1=3,
     min_state_2=0,
     max_state_2=1,
     rate=args.rate,
-    cutoff=chain_setup.rc
+    cutoff=chain_setup.rc,
+    intramolecular=True
 )
 GR.add_reaction(r_type_1)
 integrator.addExtension(GR)
@@ -122,10 +123,12 @@ if args.file is not None:
 last_dump_step=0
 # Run system with non-capped potentials, no thermostat, fixed LJ epsilon and crosslinking
 if args.file is not None: traj_file.analyse()
+if args.file is not None: traj_file.dump()
+if args.file is not None: topo_file.dump()
 for k in range(1,args.loops+1):
     integrator.run(args.steps)
-    fpls = fpl.size()
-    print fpls,
+    fpls = fpl.totalSize()
+    print ' {} '.format(fpls),
     espressopp.tools.analyse.info(system, integrator, per_atom=True)
     if args.file is not None: traj_file.analyse()
     if args.file is not None and args.stop_at<0 and k%args.dump_interval==0:

@@ -41,14 +41,14 @@ $(CHAIN_ESPP)_%/log.espp $(CHAIN_ESPP)_%/dump.h5: code/chain_run.py code/chain_h
 	SEED=$(shell head --bytes=2 /dev/urandom | od -t u2 | head -n1 | awk '{print $$2}') ; \
 	(cd $(CHAIN_ESPP)_$*; $(PY) ../code/chain_run.py $(CHAIN_N) --seed $${SEED} --rate $(RATE) \
 	 --interval $(TH) --sites $(SITES) --steps $(CHAIN_STEPS_ESPP) --dt 0.0025 --loops $(CHAIN_LOOPS_ESPP) \
-	--file dump.h5 --dump-interval 500 > log.espp)
+	--file dump.h5 --dump-interval 2 > log.espp)
 
 $(CHAIN_ESPP)_%/log_gr.espp $(CHAIN_ESPP)_%/dump_gr.h5: code/chain_run_gr.py code/chain_h5md.py code/chain_setup.py
 	@mkdir -p $(CHAIN_ESPP)_$*
 	SEED=$(shell head --bytes=2 /dev/urandom | od -t u2 | head -n1 | awk '{print $$2}') ; \
 	(cd $(CHAIN_ESPP)_$*; $(PY) ../code/chain_run_gr.py $(CHAIN_N) --seed $${SEED} --rate $(RATE) \
-	 --interval $(TH) --sites $(SITES) --steps $(CHAIN_STEPS_ESPP) --dt 0.0025 --loops 400 \
-	--file dump.h5 --dump-interval 500 > log.espp)
+	 --interval $(TH) --sites $(SITES) --steps $(CHAIN_STEPS_ESPP) --dt 0.0025 --loops $(CHAIN_LOOPS_ESPP) \
+	--file dump_gr.h5 --dump-interval 2 > log_gr.espp)
 
 chain_espp: $(CHAIN_ESPP)_$(RUN)/log.espp $(CHAIN_ESPP)_$(RUN)/dump.h5
 

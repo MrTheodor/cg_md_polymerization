@@ -54,9 +54,9 @@ def monomer_system(num_particles, density=0.8, seed=None):
     for i in range(num_particles):
         pos = system.bc.getRandomPos()
         v = espressopp.Real3D(system.rng.normal(),system.rng.normal(),system.rng.normal())
-        Xs.append([pid, pos, v])
+        Xs.append([pid, pos, v, 0])
         pid += 1
-    system.storage.addParticles(Xs, 'id', 'pos', 'v')
+    system.storage.addParticles(Xs, 'id', 'pos', 'v', 'state')
 
     # Define capped LJ potential
     verletList = espressopp.VerletList(system, cutoff=rc)
