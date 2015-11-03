@@ -1,15 +1,16 @@
 
 LMP=lmp_mpi
-PY=python
+PY=python -u
 RUN=test
 
-RATE=0.10
-SITES=0001
-TH=025
+RATE=1.0
+SITES=1
+TH=10
 FUNC=5
-CHAIN_N=00512
+CHAIN_N=1000
 CHAIN_STEPS_LAMMPS=1000000
-CHAIN_STEPS_ESPP=10000
+CHAIN_STEPS_ESPP=500
+CHAIN_LOOPS_ESPP=4000
 
 CHAIN_LAMMPS=simu_chain_lammps_K$(RATE)_TH$(TH)_S$(SITES)_N$(CHAIN_N)
 EPOXY_LAMMPS=simu_epoxy_lammps_K$(RATE)_TH$(TH)_F$(FUNC)
@@ -39,7 +40,7 @@ $(CHAIN_ESPP)_%/log.espp $(CHAIN_ESPP)_%/dump.h5: code/chain_run.py code/chain_h
 	@mkdir -p $(CHAIN_ESPP)_$*
 	SEED=$(shell head --bytes=2 /dev/urandom | od -t u2 | head -n1 | awk '{print $$2}') ; \
 	(cd $(CHAIN_ESPP)_$*; $(PY) ../code/chain_run.py $(CHAIN_N) --seed $${SEED} --rate $(RATE) \
-	 --interval $(TH) --sites $(SITES) --steps $(CHAIN_STEPS_ESPP) --dt 0.0025 --loops 400 \
+	 --interval $(TH) --sites $(SITES) --steps $(CHAIN_STEPS_ESPP) --dt 0.0025 --loops $(CHAIN_LOOPS_ESPP) \
 	--file dump.h5 --dump-interval 500 > log.espp)
 
 chain_espp: $(CHAIN_ESPP)_$(RUN)/log.espp $(CHAIN_ESPP)_$(RUN)/dump.h5
